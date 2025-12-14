@@ -1,0 +1,21 @@
+site:
+  title: Geode
+  suffix: ""
+  base_url: https://example.com
+
+build:
+  output: public
+  mode: draft
+
+theme: default
+
+ignorePatterns:
+  - .git
+  - .obsidian
+  - .trash
+
+socials:
+  - title: Discord
+    link: https://discord.gg/y25Mm7dn
+  - title: Github
+    link: https://github.com/artsbymat
