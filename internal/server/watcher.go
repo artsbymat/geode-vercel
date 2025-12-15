@@ -116,13 +116,15 @@ func Rebuild(dir string, cfg *config.Config, live bool) error {
 
 	pages := render.ParsingMarkdown(filtered)
 
+	fileTree := render.BuildFileTree(pages)
+
 	writer, err := build.NewHTMLWriter(cfg)
 	if err != nil {
 		return fmt.Errorf("init html writer: %w", err)
 	}
 
 	for _, page := range pages {
-		if err := writer.Write(page, live); err != nil {
+		if err := writer.Write(page, live, fileTree); err != nil {
 			return fmt.Errorf("write html %s: %w", page.RelativePath, err)
 		}
 	}

@@ -47,7 +47,7 @@ func NewHTMLWriter(cfg *config.Config) (*HTMLWriter, error) {
 	}, nil
 }
 
-func (w *HTMLWriter) Write(page types.MetaMarkdown, liveReload bool) error {
+func (w *HTMLWriter) Write(page types.MetaMarkdown, liveReload bool, fileTree *types.FileTree) error {
 	var cleanPath string
 	cleanPath = strings.TrimSuffix(utils.PathToSlug(page.RelativePath), ".md")
 	outputPath := filepath.Join("public", cleanPath+".html")
@@ -70,7 +70,7 @@ func (w *HTMLWriter) Write(page types.MetaMarkdown, liveReload bool) error {
 		WordCount:   template.HTML(strconv.Itoa(page.WordCount)),
 		ReadingTime: template.HTML(strconv.Itoa(page.ReadingTime)),
 		Content:     template.HTML(page.HTML),
-		Explorer:    template.HTML(""),
+		Explorer:    template.HTML(RenderExplorer(fileTree)),
 		Graph:       template.HTML(""),
 		Toc:         template.HTML(""),
 		Backlinks:   template.HTML(""),

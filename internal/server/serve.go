@@ -5,8 +5,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
-	"strings"
 )
 
 func ServePublic(port int) {
@@ -15,10 +15,20 @@ func ServePublic(port int) {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		path := r.URL.Path
 
-		if !strings.Contains(path, ".") {
-			try := "public" + path + ".html"
-			if _, err := os.Stat(try); err == nil {
-				http.ServeFile(w, r, try)
+		path = filepath.Clean(path)
+
+		if path == "/" {
+			http.ServeFile(w, r, "public/index.html")
+			return
+		}
+
+		ext := filepath.Ext(path)
+
+		if ext == "" {
+			htmlPath := filepath.Join("public", path) + ".html"
+
+			if _, err := os.Stat(htmlPath); err == nil {
+				http.ServeFile(w, r, htmlPath)
 				return
 			}
 		}
