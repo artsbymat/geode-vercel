@@ -42,7 +42,8 @@ func ParsingMarkdown(entries []content.FileEntry) []types.MetaMarkdown {
 			wordCount := CountWords(string(body))
 			readingTime := EstimateReadingTime(wordCount)
 
-			htmlOut, outgoingLinks := renderToHTML(body, resolver)
+
+			htmlOut, outgoingLinks, toc := renderToHTML(body, resolver)
 
 			page := types.MetaMarkdown{
 				Path:          entry.Path,
@@ -54,6 +55,7 @@ func ParsingMarkdown(entries []content.FileEntry) []types.MetaMarkdown {
 				WordCount:     wordCount,
 				HTML:          htmlOut,
 				OutgoingLinks: outgoingLinks,
+				TableOfContents: toc,
 			}
 
 			pages = append(pages, page)
@@ -127,8 +129,9 @@ func buildResolver(entries []content.FileEntry) wikilink.Resolver {
 	}
 }
 
-func renderToHTML(source []byte, resolver wikilink.Resolver) (string, []types.Link) {
+func renderToHTML(source []byte, resolver wikilink.Resolver) (string, []types.Link, []types.TocItem) {
 	collector := wikilink.NewLinkCollector(resolver)
+	toc := make([]types.TocItem, 0)
 
 	md := goldmark.New(
 		goldmark.WithExtensions(
@@ -143,13 +146,14 @@ func renderToHTML(source []byte, resolver wikilink.Resolver) (string, []types.Li
 		),
 		goldmark.WithParserOptions(
 			parser.WithAutoHeadingID(),
+			withHeadingShiftAndTOC(1, &toc),
 		),
 		goldmark.WithRendererOptions(html.WithUnsafe()),
 	)
 
 	var buf bytes.Buffer
 	if err := md.Convert(source, &buf); err != nil {
-		return "", nil
+		return "", nil, nil
 	}
 
 	collectedLinks := collector.GetLinks()
@@ -161,7 +165,7 @@ func renderToHTML(source []byte, resolver wikilink.Resolver) (string, []types.Li
 		}
 	}
 
-	return buf.String(), links
+	return buf.String(), links, toc
 }
 
 func extractFrontmatter(src []byte) (map[string]any, []byte) {

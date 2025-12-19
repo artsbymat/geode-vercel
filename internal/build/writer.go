@@ -65,6 +65,7 @@ func (w *HTMLWriter) Write(page types.MetaMarkdown, liveReload bool, fileTree *t
 
 	outgoingHTML := RenderLinkList(page.OutgoingLinks)
 	backlinksHTML := RenderLinkList(page.Backlinks)
+	tocHTML := RenderTOC(page.TableOfContents)
 
 	data := PageData{
 		Name:          template.HTML(w.cfg.Site.Name),
@@ -76,7 +77,7 @@ func (w *HTMLWriter) Write(page types.MetaMarkdown, liveReload bool, fileTree *t
 		Content:       template.HTML(page.HTML),
 		Explorer:      template.HTML(RenderExplorer(fileTree)),
 		Graph:         template.HTML(""),
-		Toc:           template.HTML(""),
+		Toc:           template.HTML(tocHTML),
 		OutgoingLinks: template.HTML(outgoingHTML),
 		Backlinks:     template.HTML(backlinksHTML),
 		Socials:       template.HTML(""),
