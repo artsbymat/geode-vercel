@@ -17,6 +17,7 @@ type MetaMarkdown struct {
 	Link            string
 	Title           string
 	Frontmatter     map[string]any
+	Tags            []string
 	ReadingTime     int
 	WordCount       int
 	HTML            string

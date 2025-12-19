@@ -3,11 +3,14 @@ package render
 import (
 	"bytes"
 	"geode/internal/content"
+	hashtag "geode/internal/render/tags"
 	"geode/internal/render/wikilink"
 	"geode/internal/types"
 	"geode/internal/utils"
+	"net/url"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/yuin/goldmark"
@@ -42,19 +45,20 @@ func ParsingMarkdown(entries []content.FileEntry) []types.MetaMarkdown {
 			wordCount := CountWords(string(body))
 			readingTime := EstimateReadingTime(wordCount)
 
-
-			htmlOut, outgoingLinks, toc := renderToHTML(body, resolver)
+			htmlOut, outgoingLinks, toc, contentTags := renderToHTML(body, resolver)
+			tags := mergeTags(parseFrontmatterTags(frontmatter), contentTags)
 
 			page := types.MetaMarkdown{
-				Path:          entry.Path,
-				RelativePath:  entry.RelativePath,
-				Link:          link,
-				Title:         title,
-				Frontmatter:   frontmatter,
-				ReadingTime:   readingTime,
-				WordCount:     wordCount,
-				HTML:          htmlOut,
-				OutgoingLinks: outgoingLinks,
+				Path:            entry.Path,
+				RelativePath:    entry.RelativePath,
+				Link:            link,
+				Title:           title,
+				Frontmatter:     frontmatter,
+				Tags:            tags,
+				ReadingTime:     readingTime,
+				WordCount:       wordCount,
+				HTML:            htmlOut,
+				OutgoingLinks:   outgoingLinks,
 				TableOfContents: toc,
 			}
 
@@ -129,9 +133,11 @@ func buildResolver(entries []content.FileEntry) wikilink.Resolver {
 	}
 }
 
-func renderToHTML(source []byte, resolver wikilink.Resolver) (string, []types.Link, []types.TocItem) {
+func renderToHTML(source []byte, resolver wikilink.Resolver) (string, []types.Link, []types.TocItem, []string) {
 	collector := wikilink.NewLinkCollector(resolver)
+	tagCollector := hashtag.NewCollector()
 	toc := make([]types.TocItem, 0)
+	tagResolver := hashtag.Resolver(tagLinkResolver{})
 
 	md := goldmark.New(
 		goldmark.WithExtensions(
@@ -143,6 +149,10 @@ func renderToHTML(source []byte, resolver wikilink.Resolver) (string, []types.Li
 				Resolver:  resolver,
 				Collector: collector,
 			},
+			&hashtag.Extender{
+				Collector: tagCollector,
+				Resolver:  tagResolver,
+			},
 		),
 		goldmark.WithParserOptions(
 			parser.WithAutoHeadingID(),
@@ -153,7 +163,7 @@ func renderToHTML(source []byte, resolver wikilink.Resolver) (string, []types.Li
 
 	var buf bytes.Buffer
 	if err := md.Convert(source, &buf); err != nil {
-		return "", nil, nil
+		return "", nil, nil, nil
 	}
 
 	collectedLinks := collector.GetLinks()
@@ -165,7 +175,100 @@ func renderToHTML(source []byte, resolver wikilink.Resolver) (string, []types.Li
 		}
 	}
 
-	return buf.String(), links, toc
+	return buf.String(), links, toc, tagCollector.Tags()
+}
+
+type tagLinkResolver struct{}
+
+func (tagLinkResolver) ResolveHashtag(n *hashtag.Node) ([]byte, error) {
+	tag := strings.TrimSpace(string(n.Tag))
+	tag = strings.TrimPrefix(tag, "#")
+	if tag == "" {
+		return nil, nil
+	}
+
+	return []byte("/tags/" + escapeTagPath(tag)), nil
+}
+
+func escapeTagPath(tag string) string {
+	escaped := url.PathEscape(tag)
+	escaped = strings.ReplaceAll(escaped, "%2F", "/")
+	escaped = strings.ReplaceAll(escaped, "%2f", "/")
+	return escaped
+}
+
+func parseFrontmatterTags(front map[string]any) []string {
+	v, ok := front["tags"]
+	if !ok || v == nil {
+		return nil
+	}
+
+	add := func(dst []string, s string) []string {
+		s = strings.TrimSpace(s)
+		s = strings.TrimPrefix(s, "#")
+		if s == "" {
+			return dst
+		}
+		return append(dst, s)
+	}
+
+	var out []string
+	switch vv := v.(type) {
+	case []string:
+		for _, s := range vv {
+			out = add(out, s)
+		}
+	case []any:
+		for _, it := range vv {
+			if s, ok := it.(string); ok {
+				out = add(out, s)
+			}
+		}
+	case string:
+		// Some frontmatter uses: tags: tag1, tag2
+		for s := range strings.SplitSeq(vv, ",") {
+			out = add(out, s)
+		}
+	}
+
+	return out
+}
+
+func mergeTags(a, b []string) []string {
+	if len(a) == 0 {
+		return b
+	}
+	if len(b) == 0 {
+		return a
+	}
+
+	seen := make(map[string]struct{}, len(a)+len(b))
+	out := make([]string, 0, len(a)+len(b))
+	for _, s := range a {
+		s = strings.TrimSpace(s)
+		if s == "" {
+			continue
+		}
+		if _, ok := seen[s]; ok {
+			continue
+		}
+		seen[s] = struct{}{}
+		out = append(out, s)
+	}
+	for _, s := range b {
+		s = strings.TrimSpace(s)
+		if s == "" {
+			continue
+		}
+		if _, ok := seen[s]; ok {
+			continue
+		}
+		seen[s] = struct{}{}
+		out = append(out, s)
+	}
+
+	sort.Strings(out)
+	return out
 }
 
 func extractFrontmatter(src []byte) (map[string]any, []byte) {

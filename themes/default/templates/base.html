@@ -20,12 +20,10 @@
     <main class="content">
       <article>
         <h1>{{.Title}}</h1>
-        <ul>
-          {{.Tags}}
-        </ul>
         <div>
           <p>{{ .WordCount }} characters</p>
           <p>{{ .ReadingTime }} minutes</p>
+          {{.Tags}}
         </div>
         {{ .Content }}
       </article>

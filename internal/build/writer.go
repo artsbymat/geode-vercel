@@ -66,12 +66,13 @@ func (w *HTMLWriter) Write(page types.MetaMarkdown, liveReload bool, fileTree *t
 	outgoingHTML := RenderLinkList(page.OutgoingLinks)
 	backlinksHTML := RenderLinkList(page.Backlinks)
 	tocHTML := RenderTOC(page.TableOfContents)
+	tagsHTML := RenderTags(page.Tags)
 
 	data := PageData{
 		Name:          template.HTML(w.cfg.Site.Name),
 		Suffix:        template.HTML(w.cfg.Site.Suffix),
 		Title:         template.HTML(page.Title),
-		Tags:          template.HTML(""),
+		Tags:          template.HTML(tagsHTML),
 		WordCount:     template.HTML(strconv.Itoa(page.WordCount)),
 		ReadingTime:   template.HTML(strconv.Itoa(page.ReadingTime)),
 		Content:       template.HTML(page.HTML),
