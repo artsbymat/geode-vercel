@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tag: {{ .Tag }}{{ .Suffix }}</title>
+    <link rel="stylesheet" href="/styles/explorer.css" />
+    <link rel="stylesheet" href="/styles/base.css" />
+  </head>
+  <body>
+    <header class="left-sidebar">
+      <div class="logo">
+        <a href="/">{{ .Name }}</a>
+      </div>
+      <nav>
+        <span>Explorer</span>
+        {{ .Explorer }}
+      </nav>
+    </header>
+    <main class="content">
+      <h1>Tag: #{{ .Tag }}</h1>
+      <div>
+        <p>{{ .TotalItems }} items with this tag.</p>
+        <p><a href="/tags">Back to Tag Index</a></p>
+      </div>
+
+      <section class="tag-{{ .TagID }}">
+        <ul>
+          {{ range .Pages }}
+          <li>
+            <h3><a href="{{ .URL }}">{{ .Title }}</a></h3>
+            <ul>
+              {{ range .Tags }}
+              <li><a href="{{ .URL }}">#{{ .Name }}</a></li>
+              {{ end }}
+            </ul>
+          </li>
+          {{ end }}
+        </ul>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="socials">{{ .Socials }}</div>
+      <div class="copyright">
+        Powered by <a href="https://github.com/artsbymat/geode">Geode</a>
+      </div>
+    </footer>
+
+    {{ if .LiveReload }}
+    <script>
+      const evtSource = new EventSource("/_reload");
+      evtSource.onmessage = function () {
+        location.reload();
+      };
+
+      window.addEventListener("beforeunload", () => {
+        evtSource.close();
+      });
+    </script>
+    {{ end }}
+    <script src="/scripts/explorer.js"></script>
+  </body>
+</html>

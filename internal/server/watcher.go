@@ -131,7 +131,13 @@ func Rebuild(dir string, cfg *config.Config, live bool) error {
 		}
 	}
 
-	// TODO: Build Tags Pages
+	if err := build.BuildTagsIndex(cfg, pages, live, fileTree); err != nil {
+		return fmt.Errorf("build tags index: %w", err)
+	}
+	if err := build.BuildTagPages(cfg, pages, live, fileTree); err != nil {
+		return fmt.Errorf("build tag pages: %w", err)
+	}
+
 	// TODO: Build default directory pages
 	// TODO: Build 404 Pages
 
