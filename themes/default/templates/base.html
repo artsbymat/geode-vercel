@@ -67,6 +67,20 @@
       });
     </script>
     {{ end }}
+
+    {{ if .HasTwitter }}
+    <script>
+      (function () {
+        if (window.twttr && window.twttr.widgets) return;
+        if (document.querySelector('script[src="https://platform.twitter.com/widgets.js"]')) return;
+        const s = document.createElement("script");
+        s.async = true;
+        s.src = "https://platform.twitter.com/widgets.js";
+        s.charset = "utf-8";
+        document.body.appendChild(s);
+      })();
+    </script>
+    {{ end }}
     <script src="/scripts/explorer.js"></script>
   </body>
 </html>

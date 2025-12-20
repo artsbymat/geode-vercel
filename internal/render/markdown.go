@@ -3,6 +3,7 @@ package render
 import (
 	"bytes"
 	"geode/internal/content"
+	"geode/internal/render/media"
 	hashtag "geode/internal/render/tags"
 	"geode/internal/render/wikilink"
 	"geode/internal/types"
@@ -408,6 +409,7 @@ func renderToHTML(source []byte, resolver wikilink.Resolver, embed embedResolver
 			extension.Strikethrough,
 			extension.Table,
 			extension.TaskList,
+			&media.Extender{},
 			&wikilink.Extender{
 				Resolver:  resolver,
 				Collector: collector,
