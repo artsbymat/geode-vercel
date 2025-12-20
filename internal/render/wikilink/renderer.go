@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io"
 	"path/filepath"
+	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/yuin/goldmark/ast"
@@ -60,15 +62,32 @@ func (r *Renderer) enter(w util.BufWriter, n *Node, src []byte) (ast.WalkStatus,
 
 	_, _ = w.WriteString(`<img src="`)
 	_, _ = w.Write(util.URLEscape(dest, true /* resolve references */))
+	_, _ = w.WriteString(`"`)
+
+	_, _ = w.WriteString(` alt="`)
+	_, _ = w.Write(util.EscapeHTML(dest))
+	_, _ = w.WriteString(`"`)
+
 	if n.ChildCount() == 1 {
 		label := nodeText(src, n.FirstChild())
-		if !bytes.Equal(label, n.Target) {
-			_, _ = w.WriteString(`" alt="`)
-			_, _ = w.Write(util.EscapeHTML(label))
+
+		if width, ok := parseWidth(label); ok {
+			_, _ = w.WriteString(` width="`)
+			_, _ = w.WriteString(strconv.Itoa(width))
+			_, _ = w.WriteString(`"`)
 		}
 	}
-	_, _ = w.WriteString(`">`)
+
+	_, _ = w.WriteString(`>`)
 	return ast.WalkSkipChildren, nil
+}
+
+func parseWidth(label []byte) (int, bool) {
+	w, err := strconv.Atoi(strings.TrimSpace(string(label)))
+	if err != nil || w <= 0 {
+		return 0, false
+	}
+	return w, true
 }
 
 func (r *Renderer) exit(w util.BufWriter, n *Node) {
