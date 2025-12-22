@@ -13,7 +13,7 @@ func RenderTOC(items []types.TocItem) string {
 	}
 
 	var b strings.Builder
-	b.WriteString(`<ul class="toc-list">`)
+	b.WriteString(`<ul class="link-list">`)
 	for _, it := range items {
 		if strings.TrimSpace(it.ID) == "" {
 			continue

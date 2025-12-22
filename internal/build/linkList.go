@@ -31,7 +31,7 @@ func RenderLinkList(links []types.Link) string {
 	})
 
 	var b strings.Builder
-	b.WriteString(`<ul>`)
+	b.WriteString(`<ul class="link-list">`)
 	for _, l := range sorted {
 		label := strings.TrimSpace(l.Title)
 		if label == "" {

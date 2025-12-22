@@ -4,8 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tag Index{{ .Suffix }}</title>
-    <link rel="stylesheet" href="/styles/explorer.css" />
     <link rel="stylesheet" href="/styles/base.css" />
+    <link rel="stylesheet" href="/styles/explorer.css" />
+    <link rel="stylesheet" href="/styles/content.css" />
   </head>
   <body>
     <header class="left-sidebar">
@@ -18,29 +19,31 @@
       </nav>
     </header>
     <main class="content">
-      <h1>Tag Index</h1>
-      <div>
-        <p>Found {{ .TotalTags }} total tags.</p>
-      </div>
+      <article>
+        <h1>Tag Index</h1>
+        <div>
+          <p>Found {{ .TotalTags }} total tags.</p>
+        </div>
 
-      {{ range .TagGroups }}
-      <h2 id="{{ .ID }}">Tags: {{ .Tag }}</h2>
-      <section class="tag-{{ .ID }}">
-        <p>{{ len .Pages }} items with this tag.</p>
-        <ul>
-          {{ range .Pages }}
-          <li>
-            <h3><a href="{{ .URL }}">{{ .Title }}</a></h3>
-            <ul>
-              {{ range .Tags }}
-              <li><a href="{{ .URL }}">#{{ .Name }}</a></li>
-              {{ end }}
-            </ul>
-          </li>
-          {{ end }}
-        </ul>
-      </section>
-      {{ end }}
+        {{ range .TagGroups }}
+        <h2 id="{{ .ID }}">Tags: {{ .Tag }}</h2>
+        <section class="tag-{{ .ID }}">
+          <p>{{ len .Pages }} items with this tag.</p>
+          <ul>
+            {{ range .Pages }}
+            <li>
+              <h3><a href="{{ .URL }}">{{ .Title }}</a></h3>
+              <ul>
+                {{ range .Tags }}
+                <li><a href="{{ .URL }}">#{{ .Name }}</a></li>
+                {{ end }}
+              </ul>
+            </li>
+            {{ end }}
+          </ul>
+        </section>
+        {{ end }}
+      </article>
     </main>
 
     <footer class="footer">
