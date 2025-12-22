@@ -16,6 +16,26 @@
   font-weight: 600;
   line-height: 1.25;
   color: var(--color-fg-default);
+  position: relative;
+}
+
+.content h2 a.anchor-heading,
+.content h3 a.anchor-heading,
+.content h4 a.anchor-heading,
+.content h5 a.anchor-heading,
+.content h6 a.anchor-heading {
+  position: absolute;
+  left: -1em;
+  padding-right: 0.5em;
+  opacity: 0;
+}
+
+.content h2:hover a.anchor-heading,
+.content h3:hover a.anchor-heading,
+.content h4:hover a.anchor-heading,
+.content h5:hover a.anchor-heading,
+.content h6:hover a.anchor-heading {
+  opacity: 1;
 }
 
 .content h1 {
