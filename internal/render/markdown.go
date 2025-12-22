@@ -6,6 +6,7 @@ import (
 	"geode/internal/render/anchor"
 	"geode/internal/render/callout"
 	"geode/internal/render/highlight"
+	"geode/internal/render/mark"
 	"geode/internal/render/media"
 	"geode/internal/render/mermaid"
 	hashtag "geode/internal/render/tags"
@@ -432,6 +433,7 @@ func renderToHTML(source []byte, resolver wikilink.Resolver, embed embedResolver
 			&highlight.Extender{},
 			&callout.Extender{},
 			&anchor.Extender{},
+			&mark.Extender{},
 		),
 		goldmark.WithParserOptions(
 			parser.WithAutoHeadingID(),
