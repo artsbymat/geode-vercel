@@ -28,6 +28,7 @@ type PageData struct {
 	Backlinks     template.HTML
 	Socials       template.HTML
 	HasKatex      bool
+	HasMermaid    bool
 	HasTwitter    bool
 	LiveReload    bool
 }
@@ -85,6 +86,7 @@ func (w *HTMLWriter) Write(page types.MetaMarkdown, liveReload bool, fileTree *t
 		Backlinks:     template.HTML(backlinksHTML),
 		Socials:       template.HTML(""),
 		HasKatex:      page.HasKatex,
+		HasMermaid:    page.HasMermaid,
 		HasTwitter:    strings.Contains(page.HTML, `blockquote class="twitter-tweet"`),
 		LiveReload:    liveReload,
 	}

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"geode/internal/content"
 	"geode/internal/render/media"
+	"geode/internal/render/mermaid"
 	hashtag "geode/internal/render/tags"
 	"geode/internal/render/wikilink"
 	"geode/internal/types"
@@ -50,7 +51,7 @@ func ParsingMarkdown(entries []content.FileEntry) []types.MetaMarkdown {
 			wordCount := CountWords(string(body))
 			readingTime := EstimateReadingTime(wordCount)
 
-			htmlOut, outgoingLinks, toc, contentTags, hasKatex := renderToHTML(body, resolver, embedIndex, entry.Path)
+			htmlOut, outgoingLinks, toc, contentTags, hasKatex, hasMermaid := renderToHTML(body, resolver, embedIndex, entry.Path)
 			tags := mergeTags(parseFrontmatterTags(frontmatter), contentTags)
 
 			page := types.MetaMarkdown{
@@ -66,6 +67,7 @@ func ParsingMarkdown(entries []content.FileEntry) []types.MetaMarkdown {
 				OutgoingLinks:   outgoingLinks,
 				TableOfContents: toc,
 				HasKatex:        hasKatex,
+				HasMermaid:      hasMermaid,
 			}
 
 			pages = append(pages, page)
@@ -398,13 +400,14 @@ func buildResolver(entries []content.FileEntry) wikilink.Resolver {
 	}
 }
 
-func renderToHTML(source []byte, resolver wikilink.Resolver, embed embedResolver, rootPath string) (string, []types.Link, []types.TocItem, []string, bool) {
+func renderToHTML(source []byte, resolver wikilink.Resolver, embed embedResolver, rootPath string) (string, []types.Link, []types.TocItem, []string, bool, bool) {
 	collector := wikilink.NewLinkCollector(resolver)
 	tagCollector := hashtag.NewCollector()
 	toc := make([]types.TocItem, 0)
 	tagResolver := hashtag.Resolver(tagLinkResolver{})
 
 	source = expandMarkdownEmbeds(source, embed, rootPath)
+	context := parser.NewContext()
 
 	md := goldmark.New(
 		goldmark.WithExtensions(
@@ -421,6 +424,7 @@ func renderToHTML(source []byte, resolver wikilink.Resolver, embed embedResolver
 				Collector: tagCollector,
 				Resolver:  tagResolver,
 			},
+			&mermaid.Extender{},
 		),
 		goldmark.WithParserOptions(
 			parser.WithAutoHeadingID(),
@@ -429,7 +433,7 @@ func renderToHTML(source []byte, resolver wikilink.Resolver, embed embedResolver
 		goldmark.WithRendererOptions(html.WithUnsafe()),
 	)
 
-	doc := md.Parser().Parse(text.NewReader(source))
+	doc := md.Parser().Parse(text.NewReader(source), parser.WithContext(context))
 
 	// Check if the document contains katex
 	hasKatex := false
@@ -457,7 +461,7 @@ func renderToHTML(source []byte, resolver wikilink.Resolver, embed embedResolver
 
 	var buf bytes.Buffer
 	if err := md.Renderer().Render(&buf, source, doc); err != nil {
-		return "", nil, nil, nil, false
+		return "", nil, nil, nil, false, false
 	}
 
 	collectedLinks := collector.GetLinks()
@@ -469,7 +473,7 @@ func renderToHTML(source []byte, resolver wikilink.Resolver, embed embedResolver
 		}
 	}
 
-	return buf.String(), links, toc, tagCollector.Tags(), hasKatex
+	return buf.String(), links, toc, tagCollector.Tags(), hasKatex, mermaid.GetHasMermaid(context)
 }
 
 type tagLinkResolver struct{}

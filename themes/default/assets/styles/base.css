@@ -10,6 +10,13 @@
 
 :root {
   --sidebar-width: 300px;
+  --background: #f7f7f7;
+  --foreground: #000000;
+}
+
+html.dark {
+  --background: #0d1117;
+  --foreground: #e6edf3;
 }
 
 html,
@@ -20,6 +27,8 @@ body {
 body {
   font-family: "Inter", sans-serif;
   min-height: 100vh;
+  background: var(--background);
+  color: var(--foreground);
 }
 
 .left-sidebar {
@@ -41,7 +50,22 @@ body {
   font-size: 2.5rem;
   font-weight: 700;
   text-decoration: none;
-  color: black;
+}
+
+.left-sidebar .utilities button.theme-toggle svg.sun-icon {
+  display: none;
+}
+
+.left-sidebar .utilities button.theme-toggle svg.moon-icon {
+  display: block;
+}
+
+html.dark .left-sidebar .utilities button.theme-toggle svg.sun-icon {
+  display: block;
+}
+
+html.dark .left-sidebar .utilities button.theme-toggle svg.moon-icon {
+  display: none;
 }
 
 .left-sidebar nav {

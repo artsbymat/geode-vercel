@@ -25,4 +25,5 @@ type MetaMarkdown struct {
 	Backlinks       []Link
 	TableOfContents []TocItem
 	HasKatex        bool
+	HasMermaid      bool
 }
