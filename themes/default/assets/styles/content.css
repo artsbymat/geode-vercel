@@ -97,32 +97,36 @@
 
 /* Code */
 .content code {
+  font-family: "JetBrains Mono", monospace;
   padding: 0.2em 0.4em;
   margin: 0;
   font-size: 85%;
-  font-family: "JetBrains Mono", monospace;
-  background-color: var(--color-neutral-muted);
-  border-radius: 6px;
+  border-radius: 8px;
+  background-color: var(--color-canvas-subtle);
 }
 
 .content pre {
   padding: 1rem;
   overflow: auto;
-  font-size: 85%;
   line-height: 1.45;
   background-color: var(--color-canvas-subtle);
-  border-radius: 6px;
+  border-radius: 8px;
   margin-bottom: 1rem;
 }
 
-.content pre code {
-  padding: 0;
-  margin: 0;
-  font-size: 100%;
-  word-break: normal;
-  white-space: pre;
-  background-color: transparent;
-  border: 0;
+.content .code-block {
+  position: relative;
+}
+
+.content .code-block .copy-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background-color: var(--color-canvas-default);
+  color: var(--color-fg-default);
+  border: 1px solid var(--color-border-default);
+  padding: 2px 4px;
+  font-family: "Inter", sans-serif;
 }
 
 /* Tables */
