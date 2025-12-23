@@ -2,6 +2,7 @@ package build
 
 import (
 	"html"
+	"sort"
 	"strings"
 
 	"geode/internal/types"
@@ -9,6 +10,7 @@ import (
 )
 
 func RenderExplorer(tree *types.FileTree) string {
+	sortTree(tree)
 	var b strings.Builder
 	b.WriteString(`<ul class="file-explorer">`)
 	for _, child := range tree.Children {
@@ -85,4 +87,28 @@ func renderNode(b *strings.Builder, node *types.FileTree, parentKey string) {
 	}
 
 	b.WriteString("</li>")
+}
+
+func sortTree(node *types.FileTree) {
+	if len(node.Children) == 0 {
+		return
+	}
+
+	sort.Slice(node.Children, func(i, j int) bool {
+		a := node.Children[i]
+		b := node.Children[j]
+
+		aIsFile := a.Link != "" || a.Path != ""
+		bIsFile := b.Link != "" || b.Path != ""
+
+		if aIsFile != bIsFile {
+			return !aIsFile
+		}
+
+		return strings.ToLower(a.Name) < strings.ToLower(b.Name)
+	})
+
+	for _, child := range node.Children {
+		sortTree(child)
+	}
 }
