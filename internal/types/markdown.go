@@ -26,4 +26,5 @@ type MetaMarkdown struct {
 	TableOfContents []TocItem
 	HasKatex        bool
 	HasMermaid      bool
+	Description     string
 }

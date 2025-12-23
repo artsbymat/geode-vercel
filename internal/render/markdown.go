@@ -58,7 +58,13 @@ func ParsingMarkdown(entries []content.FileEntry) []types.MetaMarkdown {
 
 			htmlOut, outgoingLinks, toc, contentTags, hasKatex, hasMermaid := renderToHTML(body, resolver, embedIndex, entry.Path)
 			tags := mergeTags(parseFrontmatterTags(frontmatter), contentTags)
-
+			description := ExtractDescription(frontmatter, entry)
+			if description == "" {
+				description = utils.StripMarkdown(string(body))
+				if len(description) > 160 {
+					description = description[:160]
+				}
+			}
 			page := types.MetaMarkdown{
 				Path:            entry.Path,
 				RelativePath:    entry.RelativePath,
@@ -73,6 +79,7 @@ func ParsingMarkdown(entries []content.FileEntry) []types.MetaMarkdown {
 				TableOfContents: toc,
 				HasKatex:        hasKatex,
 				HasMermaid:      hasMermaid,
+				Description:     description,
 			}
 
 			pages = append(pages, page)
@@ -608,6 +615,16 @@ func ExtractTitle(front map[string]any, entry content.FileEntry) string {
 	base := filepath.Base(entry.RelativePath)
 
 	return strings.TrimSuffix(base, ".md")
+}
+
+func ExtractDescription(front map[string]any, entry content.FileEntry) string {
+	if t, ok := front["description"]; ok {
+		if s, ok := t.(string); ok {
+			return s
+		}
+	}
+
+	return ""
 }
 
 func ExtractPermalink(front map[string]any, entry content.FileEntry) string {

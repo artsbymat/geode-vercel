@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{ .Title }}{{ .Suffix }}</title>
+    <meta name="description" content="{{ .Description }}" />
+    <meta name="keywords" content="{{ range .Keywords }}{{ . }}, {{ end }}" />
     <link rel="stylesheet" href="/styles/base.css" />
     <link rel="stylesheet" href="/styles/content.css" />
     <link rel="stylesheet" href="/styles/explorer.css" />
