@@ -2,6 +2,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const explorer = document.querySelector(".file-explorer");
   if (!explorer) return;
 
+  // The scrollable container is the parent 'nav' element as per base.css
+  const scrollContainer = explorer.closest("nav") || explorer;
   const STORAGE_KEY = "geode:explorer:open";
   const SCROLL_KEY = "geode:explorer:scroll";
 
@@ -25,40 +27,57 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  const saveScrollPosition = () => {
-    try {
-      sessionStorage.setItem(SCROLL_KEY, explorer.scrollTop.toString());
-    } catch {
-      // ignore
-    }
-  };
+  const openKeys = readOpenKeys();
 
+  // 1. Open folders from sessionStorage
+  explorer.querySelectorAll("li[data-node-key]").forEach((li) => {
+    const key = li.getAttribute("data-node-key");
+    if (key && openKeys.has(key)) {
+      li.classList.add("open");
+    }
+  });
+
+  // 2. Ensure active page's folders are open
+  const activeLink = explorer.querySelector("a.active");
+  if (activeLink) {
+    let parent = activeLink.parentElement;
+    while (parent && parent !== explorer) {
+      if (parent.tagName === "LI" && parent.hasAttribute("data-node-key")) {
+        const key = parent.getAttribute("data-node-key");
+        if (!parent.classList.contains("open")) {
+          parent.classList.add("open");
+          if (key) openKeys.add(key);
+        }
+      }
+      parent = parent.parentElement;
+    }
+    writeOpenKeys(openKeys);
+  }
+
+  // 3. Handle scrolling
   const restoreScrollPosition = () => {
     try {
       const scrollPos = sessionStorage.getItem(SCROLL_KEY);
       if (scrollPos !== null) {
-        explorer.scrollTop = parseInt(scrollPos, 10);
+        scrollContainer.scrollTop = parseInt(scrollPos, 10);
       }
     } catch {
       // ignore
     }
   };
 
-  const openKeys = readOpenKeys();
-  explorer.querySelectorAll("li[data-node-key]").forEach((li) => {
-    const key = li.getAttribute("data-node-key");
-    if (key && openKeys.has(key)) li.classList.add("open");
-  });
+  if (activeLink) {
+    // Scroll active item into view on new page load
+    activeLink.scrollIntoView({ block: "center", behavior: "instant" });
+  } else {
+    // Otherwise restore previous scroll (e.g. on refresh without navigation)
+    restoreScrollPosition();
+  }
 
-  restoreScrollPosition();
-
+  // Event Listeners
   explorer.addEventListener("click", (e) => {
-    if (!(e.target instanceof Element)) return;
-
     const folder = e.target.closest(".folder");
-    if (!folder) return;
-
-    if (!explorer.contains(folder)) return;
+    if (!folder || !explorer.contains(folder)) return;
 
     const li = folder.parentElement;
     if (!li) return;
@@ -66,15 +85,28 @@ document.addEventListener("DOMContentLoaded", () => {
     li.classList.toggle("open");
 
     const key = li.getAttribute("data-node-key");
-    if (!key) return;
-
-    if (li.classList.contains("open")) {
-      openKeys.add(key);
-    } else {
-      openKeys.delete(key);
+    if (key) {
+      if (li.classList.contains("open")) {
+        openKeys.add(key);
+      } else {
+        openKeys.delete(key);
+      }
+      writeOpenKeys(openKeys);
     }
-    writeOpenKeys(openKeys);
   });
 
-  explorer.addEventListener("scroll", saveScrollPosition);
+  scrollContainer.addEventListener(
+    "scroll",
+    () => {
+      try {
+        sessionStorage.setItem(
+          SCROLL_KEY,
+          scrollContainer.scrollTop.toString()
+        );
+      } catch {
+        // ignore
+      }
+    },
+    { passive: true }
+  );
 });

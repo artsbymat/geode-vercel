@@ -113,6 +113,10 @@
         <span>Explorer</span>
         {{ .Explorer }}
       </nav>
+      <div class="graph">
+        <span>Graph</span>
+        {{ .Graph }}
+      </div>
     </header>
     <main class="content">
       <article>
@@ -127,22 +131,22 @@
     </main>
 
     <aside class="right-sidebar">
-      <div class="graph">
-        <span>Graph</span>
-        {{ .Graph }}
-      </div>
+      {{ if .Toc }}
       <div class="toc">
         <span>Table of Contents</span>
         {{ .Toc }}
       </div>
+      {{ end }} {{ if .OutgoingLinks }}
       <div class="outgoingLinks">
         <span>Outgoing Links</span>
         {{ .OutgoingLinks }}
       </div>
+      {{ end }} {{ if .Backlinks }}
       <div class="backlinks">
         <span>Backlinks</span>
         {{ .Backlinks }}
       </div>
+      {{ end }}
     </aside>
 
     <footer class="footer">
@@ -199,5 +203,7 @@
     <script src="/scripts/callout.js"></script>
     <script src="/scripts/theme-toggle.js"></script>
     <script src="/scripts/copy-btn.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/force-graph"></script>
+    <script src="/scripts/graph.js"></script>
   </body>
 </html>

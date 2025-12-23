@@ -71,6 +71,9 @@ func (w *HTMLWriter) Write(page types.MetaMarkdown, liveReload bool, fileTree *t
 	tocHTML := RenderTOC(page.TableOfContents)
 	tagsHTML := RenderTags(page.Tags)
 
+	graphData := BuildGraph(page)
+	graphHTML := RenderGraphView(graphData, currentPageURL)
+
 	data := PageData{
 		Name:          template.HTML(w.cfg.Site.Name),
 		Suffix:        template.HTML(w.cfg.Site.Suffix),
@@ -80,11 +83,11 @@ func (w *HTMLWriter) Write(page types.MetaMarkdown, liveReload bool, fileTree *t
 		ReadingTime:   template.HTML(strconv.Itoa(page.ReadingTime)),
 		Content:       template.HTML(page.HTML),
 		Explorer:      template.HTML(RenderExplorer(fileTree)),
-		Graph:         template.HTML(""),
+		Graph:         template.HTML(graphHTML),
 		Toc:           template.HTML(tocHTML),
 		OutgoingLinks: template.HTML(outgoingHTML),
 		Backlinks:     template.HTML(backlinksHTML),
-		Socials:       template.HTML(""),
+		Socials:       template.HTML(RenderSocials(w.cfg.Socials)),
 		HasKatex:      page.HasKatex,
 		HasMermaid:    page.HasMermaid,
 		HasTwitter:    strings.Contains(page.HTML, `blockquote class="twitter-tweet"`),

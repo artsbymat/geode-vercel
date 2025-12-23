@@ -2,12 +2,8 @@
 .file-explorer {
   list-style: none;
   margin: 0;
-  padding-left: 0;
+  padding: 0.5rem;
   font-size: 14px;
-  flex: 1;
-  overflow-y: auto;
-  padding: 0 1rem;
-  margin-bottom: 4rem;
 }
 
 /* Nested lists */

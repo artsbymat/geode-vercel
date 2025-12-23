@@ -4,6 +4,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const syntaxThemeLink = document.getElementById("syntax-theme");
   const STORAGE_KEY = "theme";
 
+  function setTheme(theme) {
+    localStorage.setItem("theme", theme);
+
+    document.dispatchEvent(
+      new CustomEvent("theme-change", {
+        detail: theme,
+      }),
+    );
+  }
+
   function applyTheme(theme) {
     root.classList.toggle("dark", theme === "dark");
     localStorage.setItem(STORAGE_KEY, theme);
@@ -16,8 +26,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  document.addEventListener("theme-change", (event) => {
+    applyTheme(event.detail);
+  });
+
   toggle.addEventListener("click", () => {
     const isDark = root.classList.contains("dark");
-    applyTheme(isDark ? "light" : "dark");
+    setTheme(isDark ? "light" : "dark");
   });
 });
