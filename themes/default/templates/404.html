@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>404 Not Found</title>
+    <link rel="stylesheet" href="/styles/base.css" />
+    <link rel="stylesheet" href="/styles/content.css" />
+    <link rel="stylesheet" href="/styles/explorer.css" />
+    <link id="syntax-theme" rel="stylesheet" href="/styles/syntax-light.css" />
+    <script src="/scripts/theme-init.js"></script>
+  </head>
+  <body>
+    <header class="left-sidebar">
+      <div class="logo">
+        <a href="/">{{ .Name }}</a>
+      </div>
+      <div class="utilities">
+        <button class="search">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="search-icon"
+          >
+            <path d="m21 21-4.34-4.34" />
+            <circle cx="11" cy="11" r="8" />
+          </svg>
+          <span>Search</span>
+        </button>
+        <button class="theme-toggle">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="sun-icon"
+          >
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2" />
+            <path d="M12 20v2" />
+            <path d="m4.93 4.93 1.41 1.41" />
+            <path d="m17.66 17.66 1.41 1.41" />
+            <path d="M2 12h2" />
+            <path d="M20 12h2" />
+            <path d="m6.34 17.66-1.41 1.41" />
+            <path d="m19.07 4.93-1.41 1.41" />
+          </svg>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="moon-icon"
+          >
+            <path
+              d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"
+            />
+          </svg>
+        </button>
+      </div>
+      <nav>
+        <span>Explorer</span>
+        {{ .Explorer }}
+      </nav>
+    </header>
+    <main class="content">
+      <article>
+        <h1>404 Page Not Found</h1>
+        <p>Sorry, the page you are looking for does not exist.</p>
+        <a href="/">Back to Home</a>
+      </article>
+    </main>
+
+    <footer class="footer">
+      <div class="socials">{{ .Socials }}</div>
+      <div class="copyright">
+        Powered by <a href="https://github.com/artsbymat/geode">Geode</a>
+      </div>
+    </footer>
+
+    {{ if .LiveReload }}
+    <script>
+      const evtSource = new EventSource("/_reload");
+      evtSource.onmessage = function () {
+        location.reload();
+      };
+
+      window.addEventListener("beforeunload", () => {
+        evtSource.close();
+      });
+    </script>
+    {{ end }}
+    <script src="/scripts/explorer.js"></script>
+    <script src="/scripts/theme-toggle.js"></script>
+  </body>
+</html>

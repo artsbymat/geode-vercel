@@ -139,7 +139,9 @@ func Rebuild(dir string, cfg *config.Config, live bool) error {
 	}
 
 	// TODO: Build default directory pages
-	// TODO: Build 404 Pages
+	if err := build.Build404(cfg, live, fileTree); err != nil {
+		return fmt.Errorf("build 404 page: %w", err)
+	}
 
 	if err := CopyThemeAssets(cfg); err != nil {
 		return err

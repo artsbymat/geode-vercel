@@ -29,7 +29,18 @@ func ServePublic(port int) {
 			return
 		}
 
-		fs.ServeHTTP(w, r)
+		fullPath := filepath.Join("public", rel)
+		if _, err := os.Stat(fullPath); err == nil {
+			fs.ServeHTTP(w, r)
+			return
+		}
+
+		w.WriteHeader(http.StatusNotFound)
+		if _, err := os.Stat("public/404.html"); err == nil {
+			http.ServeFile(w, r, "public/404.html")
+		} else {
+			fmt.Fprint(w, "404 Not Found")
+		}
 	})
 
 	http.HandleFunc("/_reload", sseHandler)
