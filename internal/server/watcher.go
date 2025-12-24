@@ -161,6 +161,12 @@ func Rebuild(dir string, cfg *config.Config, live bool) error {
 		return fmt.Errorf("build pagefind index: %w", err)
 	}
 
+	// Build sitemap
+	fmt.Println(cfg.Site.BaseURL)
+	if err := build.BuildSitemap(cfg, pages); err != nil {
+		return fmt.Errorf("build sitemap: %w", err)
+	}
+
 	if live {
 		fmt.Println("Site rebuilt.")
 	} else {

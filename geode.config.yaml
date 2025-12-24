@@ -1,7 +1,7 @@
 site:
   name: Geode
   suffix: " - Geode"
-  base_url: https://example.com
+  base_url: https://geode.rhmt.my.id
 
 build:
   output: public
