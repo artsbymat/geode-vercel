@@ -1,8 +1,12 @@
-#!/bin/sh
+#!/usr/bin/env bash
+set -e
 
-curl -LO https://go.dev/dl/go1.25.5.linux-amd64.tar.gz
-tar -C /tmp -xzf go1.22.3.linux-amd64.tar.gz
+GO_VERSION=1.25.5
+
+curl -LO https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz
+tar -C /tmp -xzf go${GO_VERSION}.linux-amd64.tar.gz
 export PATH=/tmp/go/bin:$PATH
 
 go version
-make build-site DIR=docs
+go run ./cmd/geode/main.go build -dir docs
+# make build-site DIR=docs
