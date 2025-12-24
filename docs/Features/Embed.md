@@ -1,3 +1,8 @@
+---
+created: 2025-12-25
+modified: 2025-12-25
+---
+
 Geode supports embedding youtube, tweet, and markdown files
 
 ```markdown

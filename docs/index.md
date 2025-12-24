@@ -1,5 +1,7 @@
 ---
 title: Welcome to Geode
+created: 2025-12-25
+modified: 2025-12-25
 ---
 
 # Whats is Geode?
