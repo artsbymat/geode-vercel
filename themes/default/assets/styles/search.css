@@ -1,0 +1,59 @@
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: none;
+}
+
+.modal.is-open {
+  display: block;
+}
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+  position: relative;
+  max-width: 600px;
+  margin: 10vh auto;
+  background: var(--color-canvas-subtle);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+}
+
+body {
+  --pagefind-ui-primary: var(--color-accent-fg);
+  --pagefind-ui-text: var(--color-fg-default);
+  --pagefind-ui-background: var(--color-canvas-default);
+  --pagefind-ui-border: var(--color-border-muted);
+  --pagefind-ui-tag: var(--color-neutral-muted);
+  --pagefind-ui-border-width: 1px;
+  --pagefind-ui-border-radius: 8px;
+  --pagefind-ui-font: "Inter", sans-serif;
+}
+
+#search {
+  padding: 1rem;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+#search .pagefind-ui__search-input {
+  background-color: transparent;
+  color: inherit;
+}
+
+#search .pagefind-ui__drawer {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+#search .pagefind-ui__result-excerpt {
+  word-break: break-word;
+}

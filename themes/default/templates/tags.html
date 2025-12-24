@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="/styles/base.css" />
     <link rel="stylesheet" href="/styles/explorer.css" />
     <link rel="stylesheet" href="/styles/content.css" />
+    <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+    <link rel="stylesheet" href="/styles/search.css" />
   </head>
   <body>
     <header class="left-sidebar">
@@ -113,6 +115,16 @@
       </div>
     </footer>
 
+    <div id="searchModal" class="modal" aria-hidden="true">
+      <div class="modal-backdrop"></div>
+
+      <div class="modal-content" role="dialog" aria-modal="true">
+        <div id="search"></div>
+      </div>
+    </div>
+
+    <script src="/pagefind/pagefind-ui.js"></script>
+    <script src="/scripts/search.js"></script>
     {{ if .LiveReload }}
     <script>
       const evtSource = new EventSource("/_reload");

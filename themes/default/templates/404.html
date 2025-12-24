@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="/styles/content.css" />
     <link rel="stylesheet" href="/styles/explorer.css" />
     <link id="syntax-theme" rel="stylesheet" href="/styles/syntax-light.css" />
+    <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+    <link rel="stylesheet" href="/styles/search.css" />
     <script src="/scripts/theme-init.js"></script>
   </head>
   <body>
@@ -95,6 +97,16 @@
       </div>
     </footer>
 
+    <div id="searchModal" class="modal" aria-hidden="true">
+      <div class="modal-backdrop"></div>
+
+      <div class="modal-content" role="dialog" aria-modal="true">
+        <div id="search"></div>
+      </div>
+    </div>
+
+    <script src="/pagefind/pagefind-ui.js"></script>
+    <script src="/scripts/search.js"></script>
     {{ if .LiveReload }}
     <script>
       const evtSource = new EventSource("/_reload");

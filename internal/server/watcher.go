@@ -1,10 +1,12 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"geode/internal/build"
 	"geode/internal/config"
 	"geode/internal/content"
+	"geode/internal/pagefind"
 	"geode/internal/render"
 	"geode/internal/utils"
 	"io"
@@ -149,6 +151,14 @@ func Rebuild(dir string, cfg *config.Config, live bool) error {
 
 	if err := CopyContentAssets(filtered, cfg); err != nil {
 		return err
+	}
+
+	// Build pagefind index
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+	defer cancel()
+
+	if err := pagefind.Run(ctx, cfg.Build.Output); err != nil {
+		return fmt.Errorf("build pagefind index: %w", err)
 	}
 
 	if live {

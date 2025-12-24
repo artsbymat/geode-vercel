@@ -35,10 +35,12 @@ func ServePublic(port int) {
 			return
 		}
 
-		w.WriteHeader(http.StatusNotFound)
-		if _, err := os.Stat("public/404.html"); err == nil {
-			http.ServeFile(w, r, "public/404.html")
+		if content, err := os.ReadFile("public/404.html"); err == nil {
+			w.Header().Set("Content-Type", "text/html; charset=utf-8")
+			w.WriteHeader(http.StatusNotFound)
+			w.Write(content)
 		} else {
+			w.WriteHeader(http.StatusNotFound)
 			fmt.Fprint(w, "404 Not Found")
 		}
 	})

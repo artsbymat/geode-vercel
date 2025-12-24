@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="/styles/base.css" />
     <link rel="stylesheet" href="/styles/explorer.css" />
     <link rel="stylesheet" href="/styles/content.css" />
+    <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+    <link rel="stylesheet" href="/styles/search.css" />
   </head>
   <body>
     <header class="left-sidebar">
@@ -110,6 +112,27 @@
       </div>
     </footer>
 
+    <div id="modal-search" class="modal">
+      <div class="modal-content">
+        <div id="search"></div>
+      </div>
+    </div>
+
+    <script src="/pagefind/pagefind-ui.js"></script>
+    <script src="/scripts/search.js"></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", (event) => {
+        new PagefindUI({
+          element: "#search",
+          autofocus: true,
+          showImages: false,
+          processResult: function (result) {
+            result.url = result.url.replace(".html", "");
+            return result;
+          },
+        });
+      });
+    </script>
     {{ if .LiveReload }}
     <script>
       const evtSource = new EventSource("/_reload");
