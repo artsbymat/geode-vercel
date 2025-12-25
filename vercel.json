@@ -1,10 +1,5 @@
 {
   "buildCommand": "./cloudflare-deploy.sh",
   "outputDirectory": "public",
-  "rewrites": [
-    {
-      "source": "/:path((?!.*\\.html).*)",
-      "destination": "/:path.html"
-    }
-  ]
+  "cleanUrls": true
 }
