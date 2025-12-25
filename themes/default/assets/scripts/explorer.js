@@ -29,51 +29,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const openKeys = readOpenKeys();
 
-  // 1. Open folders from sessionStorage
-  explorer.querySelectorAll("li[data-node-key]").forEach((li) => {
-    const key = li.getAttribute("data-node-key");
-    if (key && openKeys.has(key)) {
-      li.classList.add("open");
-    }
-  });
-
-  // 2. Ensure active page's folders are open
-  const activeLink = explorer.querySelector("a.active");
-  if (activeLink) {
-    let parent = activeLink.parentElement;
-    while (parent && parent !== explorer) {
-      if (parent.tagName === "LI" && parent.hasAttribute("data-node-key")) {
-        const key = parent.getAttribute("data-node-key");
-        if (!parent.classList.contains("open")) {
-          parent.classList.add("open");
-          if (key) openKeys.add(key);
-        }
-      }
-      parent = parent.parentElement;
-    }
-    writeOpenKeys(openKeys);
-  }
-
-  // 3. Handle scrolling
-  const restoreScrollPosition = () => {
-    try {
-      const scrollPos = sessionStorage.getItem(SCROLL_KEY);
-      if (scrollPos !== null) {
-        scrollContainer.scrollTop = parseInt(scrollPos, 10);
-      }
-    } catch {
-      // ignore
-    }
-  };
-
-  if (activeLink) {
-    // Scroll active item into view on new page load
-    activeLink.scrollIntoView({ block: "center", behavior: "instant" });
-  } else {
-    // Otherwise restore previous scroll (e.g. on refresh without navigation)
-    restoreScrollPosition();
-  }
-
   // Event Listeners
   explorer.addEventListener("click", (e) => {
     const folder = e.target.closest(".folder");
@@ -101,12 +56,12 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         sessionStorage.setItem(
           SCROLL_KEY,
-          scrollContainer.scrollTop.toString()
+          scrollContainer.scrollTop.toString(),
         );
       } catch {
         // ignore
       }
     },
-    { passive: true }
+    { passive: true },
   );
 });

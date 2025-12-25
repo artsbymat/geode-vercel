@@ -11,6 +11,19 @@
     <meta name="keywords" content="{{ range .Keywords }}{{ . }}, {{ end }}" />
     <link rel="stylesheet" href="/styles/base.css" />
     <link rel="stylesheet" href="/styles/content.css" />
+    <script>
+      (function () {
+        try {
+          const open = sessionStorage.getItem("geode:explorer:open");
+          if (!open) return;
+
+          const keys = JSON.parse(open);
+          if (!Array.isArray(keys)) return;
+
+          document.documentElement.dataset.explorerOpen = keys.join(",");
+        } catch {}
+      })();
+    </script>
     <link rel="stylesheet" href="/styles/explorer.css" />
     <link rel="stylesheet" href="/styles/callout.css" />
     <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
@@ -119,6 +132,80 @@
       <nav>
         <span>Explorer</span>
         {{ .Explorer }}
+        <script>
+          (function () {
+            const explorer = document.querySelector(".file-explorer");
+            if (!explorer) return;
+
+            let currentPath = window.location.pathname;
+            if (currentPath.endsWith("/") && currentPath.length > 1) {
+              currentPath = currentPath.slice(0, -1);
+            }
+
+            const link =
+              explorer.querySelector('a[href="' + currentPath + '"]') ||
+              explorer.querySelector('a[href="' + currentPath + '/"]');
+
+            let openKeys = [];
+            try {
+              const raw = sessionStorage.getItem("geode:explorer:open");
+              if (raw) openKeys = JSON.parse(raw);
+            } catch (e) {}
+
+            if (link) {
+              link.classList.add("active");
+              let parent = link.parentElement;
+
+              while (parent && parent !== explorer) {
+                if (
+                  parent.tagName === "LI" &&
+                  parent.hasAttribute("data-node-key")
+                ) {
+                  parent.classList.add("open");
+                  const key = parent.getAttribute("data-node-key");
+                  if (!openKeys.includes(key)) {
+                    openKeys.push(key);
+                  }
+                }
+                parent = parent.parentElement;
+              }
+
+              try {
+                sessionStorage.setItem(
+                  "geode:explorer:open",
+                  JSON.stringify(openKeys),
+                );
+              } catch (e) {}
+            }
+
+            if (Array.isArray(openKeys)) {
+              openKeys.forEach((key) => {
+                const li = explorer.querySelector(
+                  'li[data-node-key="' + key + '"]',
+                );
+                if (li) li.classList.add("open");
+              });
+            }
+
+            try {
+              const scroll = sessionStorage.getItem("geode:explorer:scroll");
+              const nav = explorer.closest("nav");
+
+              if (scroll && nav) {
+                nav.scrollTop = parseInt(scroll, 10);
+              } else if (link && nav) {
+                const linkRect = link.getBoundingClientRect();
+                const navRect = nav.getBoundingClientRect();
+                if (
+                  linkRect.top < navRect.top ||
+                  linkRect.bottom > navRect.bottom
+                ) {
+                  link.scrollIntoView({ block: "center" });
+                }
+              }
+            } catch (e) {}
+          })();
+        </script>
       </nav>
       <div class="graph">
         <span>Graph</span>
