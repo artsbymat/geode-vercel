@@ -1,0 +1,4 @@
+{
+  "buildCommand": "make build-site DIR=docs",
+  "outputDirectory": "public"
+}
